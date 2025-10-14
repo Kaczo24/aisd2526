@@ -199,19 +199,55 @@ void heapSort(int arr[], int n) {
     }
 }
 
+void heapify3(int arr[], int n, int i) {
+    int largest = i; 
+    int l = 3 * i + 1;
+    int m = 3 * i + 2; 
+    int r = 3 * i + 3;
+
+    if (l < n && arr[l] > arr[largest])
+        largest = l;
+    
+    if (m < n && arr[m] > arr[largest])
+        largest = m;
+
+    if (r < n && arr[r] > arr[largest])
+        largest = r;
+        
+    comCount+=3;
+
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        assCount+=3;
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort3(int arr[], int n) {
+    for (int i = n / 3 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+    for (int i = n - 1; i >= 0; i--) {
+        swap(arr[0], arr[i]);
+        assCount+=3;
+        heapify(arr, i, 0);
+    }
+}
+
 int main()
 {
     srand(time(NULL));
     int arr[size];
     for(int n = 0; n < size; n++)
-        arr[n] = size + 100 - n;
-        //arr[n] = rand() % (size * 10);
+        //arr[n] = size + 100 - n;
+        arr[n] = rand() % (size * 10);
     
     //INSERTION_SORT(arr);
     //INSERTION_SORT2(arr);
     //mergeSort(arr, 0, size - 1);
     //mergeSort3(arr, 0, size - 1);
     //heapSort(arr, size);
+    heapSort3(arr, size);
     
     for(int n = 0; n < size; n++)
         cout << arr[n] << endl;
