@@ -6,7 +6,7 @@
 using namespace std;
 
 int assCount = 0, comCount = 0;
-int size = 50;
+int size = 51;
 
 
 void INSERTION_SORT(int arr[]) {
@@ -26,24 +26,34 @@ void INSERTION_SORT(int arr[]) {
     }
 }
 
-/*void INSERTION_SORT2(int arr[]) {
+void INSERTION_SORT2(int arr[]) {
     for(int n = 2; n < size; n+=2){
         int x = arr[n] > arr[n-1] ? arr[n-1] : arr[n];
         int y = arr[n] > arr[n-1] ? arr[n] : arr[n-1];
         
-        int m = n - 1; 
+        int m = n - 2; 
         assCount+=2; 
-        comCount+=2;
+        comCount++;
+        while(m >= 0 && arr[m] > y) {
+            arr[m+2] = arr[m];
+            m--;
+            assCount++;
+            comCount+=2;
+        }
+        arr[m+2] = y;
+        arr[m+1] = arr[m];
+        assCount+=2;
         while(m >= 0 && arr[m] > x) {
             arr[m+1] = arr[m];
             m--;
-            assCount+=2;
+            assCount++;
             comCount+=2;
         }
         arr[m+1] = x;
         assCount++;
+        if(n==size-2)n--;
     }
-}*/
+}
 
 void merge(int arr[], int b, int m, int e) {
     int n1 = m - b + 1;
@@ -158,8 +168,7 @@ void mergeSort3(int arr[], int b, int e) {
     }
 }
 
-void heapify(int arr[], int n, int i)
-{
+void heapify(int arr[], int n, int i) {
     int largest = i; 
     int l = 2 * i + 1; 
     int r = 2 * i + 2;
@@ -179,8 +188,7 @@ void heapify(int arr[], int n, int i)
     }
 }
 
-void heapSort(int arr[], int n)
-{
+void heapSort(int arr[], int n) {
     for (int i = n / 2 - 1; i >= 0; i--)
         heapify(arr, n, i);
 
@@ -200,8 +208,9 @@ int main()
         //arr[n] = rand() % (size * 10);
     
     //INSERTION_SORT(arr);
+    //INSERTION_SORT2(arr);
     //mergeSort(arr, 0, size - 1);
-    mergeSort3(arr, 0, size - 1);
+    //mergeSort3(arr, 0, size - 1);
     //heapSort(arr, size);
     
     for(int n = 0; n < size; n++)
