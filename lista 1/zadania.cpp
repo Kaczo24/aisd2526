@@ -107,16 +107,16 @@ void mergeSort(int arr[], int b, int e) {
 
 void merge3(int arr[], int b, int m1, int m2, int e) {
     int n1 = m1 - b + 2;
-    int n2 = m2 - m1 + 2;
+    int n2 = m2 - m1 + 1;
     int n3 = e - m2 + 1;
 
     int L[n1], M[n2], R[n3];
     
-    for (int i = 0; i < n1; i++)
+    for (int i = 0; i < n1-1; i++)
         L[i] = arr[b + i];
-    for (int j = 0; j < n2; j++)
+    for (int j = 0; j < n2-1; j++)
         M[j] = arr[m1 + 1 + j];
-    for (int k = 0; k < n2; k++)
+    for (int k = 0; k < n3-1; k++)
         R[k] = arr[m2 + 1 + k];
     
     L[n1-1] = INT_MAX;
@@ -128,7 +128,7 @@ void merge3(int arr[], int b, int m1, int m2, int e) {
     assCount += 3 + e - b;
     comCount++;
 
-    for(int index = b; index < e; index++) {
+    for(int index = b; index <= e; index++) {
         if(L[i] < M[j]) {
             if(L[i] < R[k]) {
                 arr[index] = L[i++];
@@ -169,9 +169,12 @@ void heapify(int arr[], int n, int i)
 
     if (r < n && arr[r] > arr[largest])
         largest = r;
+        
+    comCount+=2;
 
     if (largest != i) {
         swap(arr[i], arr[largest]);
+        assCount+=3;
         heapify(arr, n, largest);
     }
 }
@@ -183,7 +186,7 @@ void heapSort(int arr[], int n)
 
     for (int i = n - 1; i >= 0; i--) {
         swap(arr[0], arr[i]);
-
+        assCount+=3;
         heapify(arr, i, 0);
     }
 }
@@ -198,8 +201,8 @@ int main()
     
     //INSERTION_SORT(arr);
     //mergeSort(arr, 0, size - 1);
-    //mergeSort3(arr, 0, size - 1);
-    heapSort(arr, size);
+    mergeSort3(arr, 0, size - 1);
+    //heapSort(arr, size);
     
     for(int n = 0; n < size; n++)
         cout << arr[n] << endl;
