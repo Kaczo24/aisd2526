@@ -25,9 +25,11 @@ void quickSort(int arr[], int low, int high) {
     }
 }
 
+
 void quickSort3(int arr[], int low, int high) {
     if (low < high) {
-        int mid = (high + low) / 2;
+        
+        int mid = high - 1;
         
         if(arr[mid] > arr[high])
             swap(arr[mid], arr[high]);
@@ -35,37 +37,42 @@ void quickSort3(int arr[], int low, int high) {
         int pivot1 = arr[mid];
         int pivot2 = arr[high];
         
-        int i = (low - 1);
-        int j = (mid - 1);
+        int i = low;
+        int j = low;
     
-        for (int n = low; n < high; n++) {
+        for (int n = low; n < high - 1; n++) {
             if (arr[n] <= pivot1) {
-                i++;
+                swap(arr[i], arr[j]);
                 swap(arr[i], arr[n]);
-            } else if(arr[n] <= pivot2) {
+                i++;
                 j++;
+            } else if(arr[n] <= pivot2) {
                 swap(arr[j], arr[n]);
+                j++;
             }
         }
         
-        swap(arr[i + 1], arr[mid]);
-        swap(arr[j + 1], arr[high]);
+        
+        swap(arr[i], arr[j]);
+        j++;
+        swap(arr[i], arr[mid]);
+        swap(arr[j], arr[high]);
 
-        quickSort(arr, low, i);
-        quickSort(arr, i+2, j);
-        quickSort(arr, j + 2, high);
+        quickSort3(arr, low, i - 1);
+        quickSort3(arr, i + 1, j - 1);
+        quickSort3(arr, j + 1, high);
     }
 }
 
 int main()
 {
-	int size = 500;
+	int size = 27*27;
     srand(time(NULL));
     int arr[size];
     for(int n = 0; n < size; n++)
         arr[n] = rand() % (size * 10);
  
-  	quickSort(arr, 0, size-1);
+  	quickSort3(arr, 0, size-1);
 
     for(int n = 1; n < size; n++)
           cout << arr[n] << "\t" << (arr[n-1]<=arr[n]) << endl;
