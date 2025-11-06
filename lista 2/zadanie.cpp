@@ -96,9 +96,9 @@ void radixsort(int arr[], int n, int d)
 
 template <typename T>
 class List {
-    public:
+    private:
     struct Node {
-        Node *next, *prev;
+        Node *next = nullptr, *prev = nullptr;
         T key;
         Node(T _key) : key(_key) {}
         Node(Node &other) : key(other.key), next(other.next), prev(other.prev) {}
@@ -113,9 +113,16 @@ class List {
         }
         
     };
-    
-    
     Node *start = nullptr, *head = nullptr;
+    
+    public:
+    struct Iterum {
+        ~Iterum(){}
+        Node *current = nullptr;
+        T prev() { if(current != nullptr && current->prev != nullptr) return current->prev->key; return 0;}
+        operator T() const {if(current != nullptr) return current->key; return 0; }
+    };
+    
     int count = 0;
     
     void push(T key) {
@@ -159,7 +166,18 @@ class List {
         count--;
     }
     
+    bool iterate(Iterum &value) {
+        if(value.current == nullptr) value.current = start;
+        else value.current = value.current->next;
+        return value.current != nullptr;
+    }
+    
     void insertionSort() {
+        if(count <= 1) return;
+        if(count == 2) {
+            if(start->key > head->key) swap(start->key, head->key);
+            return;
+        }
         Node *currentHead = start->next;
         
         for(Node *currentHead = start->next; currentHead != nullptr; ) {
@@ -198,26 +216,56 @@ class List {
     }
 };
 
+void bucketSort(float arr[], int n) {
+    float max = arr[0], min = arr[0];
+    for (int i = 0; i < n; i++) {
+        if(arr[i] > max) max = arr[i];
+        if(arr[i] < min) min = arr[i];
+    }
+    
+    List<float> b[n];
+    for (int i = 0; i < n; i++) 
+        b[(int)(n * (arr[i] - min) / (max - min + 1))].push(arr[i]);
+    
+    for (int i = 0; i < n; i++) 
+        b[i].insertionSort();
+    
+    int index = 0;
+    
+    for (int i = 0; i < n; i++) {
+        List<float>::Iterum val;
+        while(b[i].iterate(val))
+            arr[index++] = val;
+    }
+}
+
 int main()
 {
-	int size = 200;
+	int size = 500;
     srand(time(NULL));
     int arr[size];
     List<int> list;
+    float farr[size];
     
-    for(int n = 0; n < size; n++)
+    for(int n = 0; n < size; n++) {
+        farr[n] = ((rand() % (size * 100)) - (size * 50)) / 100.0;
         list.push(rand() % (size * 10));
-        //arr[n] = (rand() % (size * 10)) - (size * 5);
+        arr[n] = (rand() % (size * 10)) - (size * 5);
+    }
         
+    bucketSort(farr, size);
     list.insertionSort();
   	//quickSort(arr, 0, size-1);
   	//quickSort3(arr, 0, size-1);
   	//radixsort(arr, size, 10);
 
 
-    List<int>::Node* start = list.start->next;
+    List<int>::Iterum val;
+        while(list.iterate(val))
+            cout << val << "\t" << (val.prev()<=val) << endl;
+    
     for(int n = 1; n < size; n++)
-        cout << (start = start->next)->key << "\t" << (start->prev->key<=start->key) << endl;
+        cout << farr[n] << "\t" << (farr[n-1] <= farr[n]) << endl;
         //cout << arr[n] << "\t" << (arr[n-1]<=arr[n]) << endl;
  
   	return 0;
