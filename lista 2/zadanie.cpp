@@ -94,22 +94,131 @@ void radixsort(int arr[], int n, int d)
     }
 }
 
+template <typename T>
+class List {
+    public:
+    struct Node {
+        Node *next, *prev;
+        T key;
+        Node(T _key) : key(_key) {}
+        Node(Node &other) : key(other.key), next(other.next), prev(other.prev) {}
+        Node(Node &&other) : key(other.key) {
+            next = other.next;
+            prev = other.prev;
+            other.prev = other.next = nullptr;
+        }
+        ~Node() {
+            delete next;
+            delete prev;
+        }
+        
+    };
+    
+    
+    Node *start = nullptr, *head = nullptr;
+    int count = 0;
+    
+    void push(T key) {
+        count++;
+        if(head == nullptr)
+            head = new Node(key);
+        else {
+            head->next = new Node(key);
+            head->next->prev = head;
+            head = head->next;
+        }
+        if(start == nullptr)
+            start = head;
+    }
+    
+    T& operator[](int n) {
+        if(n > count) return NULL;
+        Node* current;
+        for(int m = 0; m < n; m++) 
+            current = current->head;
+        return current->key;
+    }
+    
+    void deleteIndex(int n) {
+        if(n > count) return;
+        Node* current;
+        for(int m = 0; m < n; m++) 
+            current = current->head;
+        
+        if(current->next != nullptr)
+            current->next->prev = current->prev;
+        else
+            head = current->prev;
+            
+        if(current->prev != nullptr)
+            current->prev->next = current->next;
+        else
+            start = current->next;
+            
+        delete current;
+        count--;
+    }
+    
+    void insertionSort() {
+        Node *currentHead = start->next;
+        
+        for(Node *currentHead = start->next; currentHead != nullptr; ) {
+            Node *nextHead = currentHead->next, *sortingHead = currentHead->prev;
+            
+            if(sortingHead->key > currentHead->key) {
+                
+                currentHead->prev->next = currentHead->next;
+                if(currentHead->next != nullptr)
+                    currentHead->next->prev = currentHead->prev;
+                else
+                    head = currentHead->prev;
+                
+                while(sortingHead != nullptr && sortingHead->key > currentHead->key)
+                    sortingHead = sortingHead->prev;
+                    
+                if(sortingHead == nullptr) {
+                    start->prev = currentHead;
+                    currentHead->prev = nullptr;
+                    currentHead->next = start;
+                    start = currentHead;
+                }
+                else {
+                    currentHead->prev = sortingHead;
+                    currentHead->next = sortingHead->next;
+                    if(sortingHead->next != nullptr)
+                        sortingHead->next->prev = currentHead;
+                    else
+                        head = currentHead;
+                    sortingHead->next = currentHead;
+                }
+            }
+            currentHead = nextHead;
+            
+        }
+    }
+};
 
 int main()
 {
-	int size = 1000;
+	int size = 200;
     srand(time(NULL));
     int arr[size];
-    for(int n = 0; n < size; n++)
-        arr[n] = (rand() % (size * 10)) - (size * 5);
-        
+    List<int> list;
     
+    for(int n = 0; n < size; n++)
+        list.push(rand() % (size * 10));
+        //arr[n] = (rand() % (size * 10)) - (size * 5);
+        
+    list.insertionSort();
   	//quickSort(arr, 0, size-1);
   	//quickSort3(arr, 0, size-1);
   	//radixsort(arr, size, 10);
 
+
+    List<int>::Node* start = list.start->next;
     for(int n = 1; n < size; n++)
-          cout << arr[n] << "\t" << (arr[n-1]<=arr[n]) << endl;
+        cout << (start = start->next)->key << "\t" << (start->prev->key<=start->key) << endl;
+        //cout << arr[n] << "\t" << (arr[n-1]<=arr[n]) << endl;
  
   	return 0;
 }
