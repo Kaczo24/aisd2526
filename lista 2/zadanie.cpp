@@ -1,14 +1,15 @@
 #include<iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <chrono>
 #include <cmath>
 
 using namespace std;
 
-void quickSort(int arr[], int low, int high) {
+void quickSort(float arr[], int low, int high) {
     if (low < high) {
 
-        int pivot = arr[high];
+        float pivot = arr[high];
         int i = (low - 1);
     
         for (int j = low; j <= high - 1; j++) {
@@ -27,7 +28,7 @@ void quickSort(int arr[], int low, int high) {
 }
 
 
-void quickSort3(int arr[], int low, int high) {
+void quickSort3(float arr[], int low, int high) {
     if (low < high) {
         
         int mid = high - 1;
@@ -35,8 +36,8 @@ void quickSort3(int arr[], int low, int high) {
         if(arr[mid] > arr[high])
             swap(arr[mid], arr[high]);
         
-        int pivot1 = arr[mid];
-        int pivot2 = arr[high];
+        float pivot1 = arr[mid];
+        float pivot2 = arr[high];
         
         int i = low;
         int j = low;
@@ -241,32 +242,57 @@ void bucketSort(float arr[], int n) {
 
 int main()
 {
-	int size = 500;
     srand(time(NULL));
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::microseconds;
+    
+	int size = 500000, tests = 10;
     int arr[size];
-    List<int> list;
-    float farr[size];
-    
-    for(int n = 0; n < size; n++) {
-        farr[n] = ((rand() % (size * 100)) - (size * 50)) / 100.0;
-        list.push(rand() % (size * 10));
-        arr[n] = (rand() % (size * 10)) - (size * 5);
-    }
+	for(int d = 10; d <= 24; d++) {
+	    
+    	float totalTime = 0;
+    	for(int t = 0; t < tests; t++) {
         
-    bucketSort(farr, size);
-    list.insertionSort();
-  	//quickSort(arr, 0, size-1);
-  	//quickSort3(arr, 0, size-1);
-  	//radixsort(arr, size, 10);
-
-
-    List<int>::Iterum val;
-        while(list.iterate(val))
-            cout << val << "\t" << (val.prev()<=val) << endl;
-    
-    for(int n = 1; n < size; n++)
-        cout << farr[n] << "\t" << (farr[n-1] <= farr[n]) << endl;
-        //cout << arr[n] << "\t" << (arr[n-1]<=arr[n]) << endl;
- 
+            for(int n = 0; n < size; n++)
+                arr[n] = (rand() % (size * 10)) - (size * 5);
+            
+            auto t1 = high_resolution_clock::now();
+            radixsort(arr, size, d);
+            auto t2 = high_resolution_clock::now();
+            
+            totalTime += duration_cast<microseconds>(t2 - t1).count() / 1000.0;
+    	}
+        cout << d << "\t" << totalTime / tests << endl;
+	}
+	
+	cout << "\n\n------------------\n\n";
+	
+	int sizes[] = {10, 50, 100, 1000, 10000, 50000, 100000};
+	for(int size : sizes) {
+	    
+	    float quickTime = 0, quick3Time = 0, bucketTime = 0;
+    	for(int t = 0; t < tests; t++) {
+        
+	        float arr1[size], arr2[size], arr3[size];
+	        for(int n = 0; n < size; n++)
+	            arr1[n] = arr2[n] = arr3[n] = ((rand() % (size * 100)) - (size * 50)) / 100.0;
+            
+            auto t1 = high_resolution_clock::now();
+            quickSort(arr1, 0, size-1);
+            auto t2 = high_resolution_clock::now();
+            quickSort3(arr2, 0, size-1);
+            auto t3 = high_resolution_clock::now();
+            bucketSort(arr3, size);
+            auto t4 = high_resolution_clock::now();
+            
+            quickTime += duration_cast<microseconds>(t2 - t1).count() / 1000.0;
+            quick3Time += duration_cast<microseconds>(t3 - t2).count() / 1000.0;
+            bucketTime += duration_cast<microseconds>(t4 - t3).count() / 1000.0;
+    	}
+    	cout << size << ":\tquickSort " << quickTime / tests 
+    	     << "\tquickSort3 " << quick3Time / tests 
+    	     << "\tbucketSort " << bucketTime / tests << endl;
+	}
   	return 0;
 }
