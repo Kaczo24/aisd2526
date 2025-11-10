@@ -44,9 +44,8 @@ void quickSort3(float arr[], int low, int high) {
     
         for (int n = low; n < high - 1; n++) {
             if (arr[n] <= pivot1) {
+                swap(arr[j], arr[n]);
                 swap(arr[i], arr[j]);
-                if(n != j)
-                    swap(arr[i], arr[n]);
                 i++;
                 j++;
             } else if(arr[n] <= pivot2) {
@@ -55,10 +54,9 @@ void quickSort3(float arr[], int low, int high) {
             }
         }
         
-        if(j != mid)
-            swap(arr[i], arr[j]);
+        swap(arr[j], arr[mid]);
+        swap(arr[i], arr[j]);
         j++;
-        swap(arr[i], arr[mid]);
         swap(arr[j], arr[high]);
 
         quickSort3(arr, low, i - 1);
