@@ -4,8 +4,14 @@
 #include <set>
 #include <map>
 #include<algorithm>
+#include <time.h>
+#include <chrono>
 
 using namespace std;
+using std::chrono::high_resolution_clock;
+using std::chrono::duration_cast;
+using std::chrono::nanoseconds;
+using std::chrono::microseconds;
 
 set<int> activitySelectionRec(vector<pair<int, int>>& activities, int i) {
     int k = i + 1;
@@ -84,8 +90,58 @@ set<int> activitySelectionDynamic(vector<pair<int, int>> activities) {
     return sol[0][0];
 }
 
+void Test() {
+    srand(time(NULL));
+
+    int sizes[] = {10, 100, 250, 500, 1000};
+    int testNumber = 10;
+
+    cout << "Size\t\tDyna\t\tRec\t\tIter\t\tRecRev\t\tIterRev\n";
+
+    for (int s = 0; s < sizeof(sizes) / sizeof(sizes[0]); s++)
+    {
+        double timeD = 0, timeR = 0, timeI = 0, Rtime = 0, Itime = 0;
+
+        vector<pair<int, int>> activities(sizes[s]);
+        for (int m = 0; m < testNumber; m++) {
+            for (int n = 0; n < sizes[s]; n++) {
+                int start = rand() % (sizes[s] * 10);
+                activities[n] = { start, start + rand() % 40};
+            }
+            auto t1 = high_resolution_clock::now();
+            if(sizes[s] < 200)
+                activitySelectionDynamic(activities);
+            auto t2 = high_resolution_clock::now();
+
+            sort(activities.begin(), activities.end(), [](pair<int, int> a, pair<int, int> b) { return a.second < b.second; });
+
+            auto t3 = high_resolution_clock::now();
+            activitySelectionRec(activities);
+            auto t4 = high_resolution_clock::now();
+            activitySelectionIter(activities);
+            auto t5 = high_resolution_clock::now();
+
+            sort(activities.begin(), activities.end(), [](pair<int, int> a, pair<int, int> b) { return a.first < b.first; });
+
+            auto t6 = high_resolution_clock::now();
+            activitySelectionRecRev(activities);
+            auto t7 = high_resolution_clock::now();
+            activitySelectionIterRev(activities);
+            auto t8 = high_resolution_clock::now();
+
+            timeD += duration_cast<nanoseconds>(t2 - t1).count() / 1000.0 / testNumber;
+            timeR += duration_cast<nanoseconds>(t4 - t3).count() / 1000.0 / testNumber;
+            timeI += duration_cast<nanoseconds>(t5 - t4).count() / 1000.0 / testNumber;
+            Rtime += duration_cast<nanoseconds>(t7 - t6).count() / 1000.0 / testNumber;
+            Itime += duration_cast<nanoseconds>(t8 - t7).count() / 1000.0 / testNumber;
+        }
+        cout << sizes[s] << "\t\t" << timeD << "\t\t" << timeR << "\t\t" << timeI << "\t\t" << Rtime << "\t\t" << Itime << endl;
+    }
+}
+
 int main()
 {
+    /*
     vector<pair<int, int>> activities = {
         {1, 2},
         {2, 4},
@@ -107,7 +163,7 @@ int main()
         {12, 16}
     };
 
-    
+
     cout << activitySelectionDynamic(activities).size() << endl;
 
     sort(activities.begin(), activities.end(), [](pair<int, int> a, pair<int, int> b) { return a.second < b.second; });
@@ -119,7 +175,8 @@ int main()
 
     cout << activitySelectionRecRev(activities).size() << endl;
     cout << activitySelectionIterRev(activities).size() << endl;
-
+    */
+    Test();
 
     return 0;
 }
