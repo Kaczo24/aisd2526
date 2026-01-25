@@ -97,6 +97,23 @@ tuple<Tree, string> Huffman3(string s) {
     for (auto [f, s] : counts)
         branches.push_back(new Tree(f, s));
 
+    if(branches.size() % 2 == 0) {
+        int lowest1 = 0, lowest2 = 1;
+        if (branches[lowest2]->count > branches[lowest1]->count)
+            swap(lowest2, lowest1);
+        for (int n = 2; n < branches.size(); n++) {
+            if (branches[lowest1]->count > branches[n]->count)
+                lowest1 = n;
+            if (branches[lowest2]->count > branches[lowest1]->count)
+                swap(lowest2, lowest1);
+        }
+        if (lowest1 < lowest2) swap(lowest1, lowest2);
+        Tree* next = new Tree(branches[lowest1], branches[lowest2]);
+        branches.erase(branches.begin() + lowest1);
+        branches.erase(branches.begin() + lowest2);
+        branches.push_back(next);
+    }
+
     while (branches.size() > 2) {
         int lowest1 = 0, lowest2 = 1, lowest3 = 2;
         if (branches[lowest2]->count > branches[lowest1]->count)
@@ -124,9 +141,6 @@ tuple<Tree, string> Huffman3(string s) {
         branches.erase(branches.begin() + lowest3);
         branches.push_back(next);
     }
-
-    if (branches.size() == 2)
-        branches = { new Tree(branches[0], branches[1]) };
 
     auto codes = branches[0]->Codify();
 

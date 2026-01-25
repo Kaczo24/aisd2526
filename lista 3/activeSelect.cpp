@@ -37,13 +37,13 @@ set<int> activitySelectionIter(vector<pair<int, int>>& activities) {
     int j = -1;
 
     for (int i = 0; i < activities.size(); i++)
-        if (j == -1 ||  activities[i].first >= activities[j].second)
+        if (j == -1 || activities[i].first >= activities[j].second)
             acts.insert(j = i);
 
     return acts;
 }
 
-set<int> activitySelectionRecRev(vector<pair<int, int>> activities, int k) {
+set<int> activitySelectionRecRev(vector<pair<int, int>> &activities, int k) {
     int i = k - 1;
     while (i >= 0 && (k != activities.size() && activities[k].first < activities[i].second))
         i--;
@@ -60,7 +60,7 @@ set<int> activitySelectionRecRev(vector<pair<int, int>>& activities)
     return activitySelectionRecRev(activities, activities.size());
 }
 
-set<int> activitySelectionIterRev(vector<pair<int, int>> activities) {
+set<int> activitySelectionIterRev(vector<pair<int, int>> &activities) {
     set<int> acts;
     int k = activities.size();
 
@@ -71,7 +71,7 @@ set<int> activitySelectionIterRev(vector<pair<int, int>> activities) {
     return acts;
 }
 
-set<int> activitySelectionDynamic(int i, int end, vector<pair<int, int>> &activities, vector<map<int, set<int>>> &solution) {
+set<int> activitySelectionDynamic(int i, int end, vector<pair<int, int>>& activities, vector<map<int, set<int>>>& solution) {
     int n = activities.size();
     if (i == n) return {};
     set<int> v1, v2;
@@ -84,7 +84,7 @@ set<int> activitySelectionDynamic(int i, int end, vector<pair<int, int>> &activi
     }
     return solution[i][end] = v1.size() > v2.size() ? v1 : v2;
 }
-set<int> activitySelectionDynamic(vector<pair<int, int>> activities) {
+set<int> activitySelectionDynamic(vector<pair<int, int>> &activities) {
     vector<map<int, set<int>>> sol(activities.size());
     activitySelectionDynamic(0, 0, activities, sol);
     return sol[0][0];
@@ -93,7 +93,7 @@ set<int> activitySelectionDynamic(vector<pair<int, int>> activities) {
 void Test() {
     srand(time(NULL));
 
-    int sizes[] = {10, 100, 250, 500, 1000};
+    int sizes[] = { 10, 100, 250, 500, 1000 };
     int testNumber = 10;
 
     cout << "Size\t\tDyna\t\tRec\t\tIter\t\tRecRev\t\tIterRev\n";
@@ -106,10 +106,10 @@ void Test() {
         for (int m = 0; m < testNumber; m++) {
             for (int n = 0; n < sizes[s]; n++) {
                 int start = rand() % (sizes[s] * 10);
-                activities[n] = { start, start + rand() % 40};
+                activities[n] = { start, start + rand() % 40 };
             }
             auto t1 = high_resolution_clock::now();
-            if(sizes[s] < 200)
+            if (sizes[s] < 200)
                 activitySelectionDynamic(activities);
             auto t2 = high_resolution_clock::now();
 
@@ -135,7 +135,8 @@ void Test() {
             Rtime += duration_cast<nanoseconds>(t7 - t6).count() / 1000.0 / testNumber;
             Itime += duration_cast<nanoseconds>(t8 - t7).count() / 1000.0 / testNumber;
         }
-        cout << sizes[s] << "\t\t" << timeD << "\t\t" << timeR << "\t\t" << timeI << "\t\t" << Rtime << "\t\t" << Itime << endl;
+        string D = ((sizes[s] < 200) ? to_string(timeD) : "N/A");
+        cout << sizes[s] << "\t\t" << D << "\t\t" << timeR << "\t\t" << timeI << "\t\t" << Rtime << "\t\t" << Itime << endl;
     }
 }
 
